@@ -397,7 +397,7 @@ const translations = {
                 logbook: "Journal",
                 rules: "Règles",
             },
-            interactionMode: "Mode d'action :",
+            interactionMode: "Actions :",
             modeWave: "Envoyer un rayon",
             modeQuery: "Interroger une case",
             availableGems: "Gemmes disponibles :",
