@@ -93,6 +93,15 @@
 
         <!-- Game Screen -->
         <div id="screen-game" class="screen hidden">
+            <div id="share-link-container" class="hidden">
+                <button id="share-link" type="button" aria-label="partager">
+                    <span class="share-text">partager</span>
+                    <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.3a3.2 3.2 0 0 0 0-1.8l6.7-3.3A3 3 0 1 0 15 6a3 3 0 0 0 .1.7L8.4 10a3 3 0 1 0 0 4l6.7 3.3A3 3 0 1 0 18 16z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="share-toast" class="toast hidden" role="status" aria-live="polite"></div>
             <main id="game-container">
                 <div id="game-board-wrapper">
                     <canvas id="gem-canvas" tabindex="0"></canvas>

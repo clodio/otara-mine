@@ -40,6 +40,10 @@ export class UI {
     rulesPanel!: HTMLElement;
     modeWaveBtn!: HTMLButtonElement;
     modeQueryBtn!: HTMLButtonElement;
+    shareLinkContainer!: HTMLElement;
+    shareLink!: HTMLButtonElement;
+    shareToast!: HTMLElement;
+    private toastTimeoutId: number | null = null;
     
     // End Screen Elements
     endTitle!: HTMLElement;
@@ -95,6 +99,9 @@ export class UI {
         this.previewToggle = document.getElementById('preview-toggle') as HTMLInputElement;
         this.modeWaveBtn = document.getElementById('mode-wave-btn') as HTMLButtonElement;
         this.modeQueryBtn = document.getElementById('mode-query-btn') as HTMLButtonElement;
+        this.shareLinkContainer = document.getElementById('share-link-container') as HTMLElement;
+        this.shareLink = document.getElementById('share-link') as HTMLButtonElement;
+        this.shareToast = document.getElementById('share-toast') as HTMLElement;
         
         this.endTitle = document.getElementById('end-title')!;
         this.endRating = document.getElementById('end-rating') as HTMLElement;
@@ -132,6 +139,7 @@ export class UI {
         this.previewToggle.addEventListener('change', () => this.game.togglePlayerPathPreview());
         this.modeWaveBtn.addEventListener('click', () => this.game.setInteractionMode(InteractionMode.WAVE));
         this.modeQueryBtn.addEventListener('click', () => this.game.setInteractionMode(InteractionMode.QUERY));
+        this.shareLink.addEventListener('click', () => this.copyShareLinkToClipboard());
         
         document.addEventListener('keydown', (e) => {
             if (e.key === 'n' && (gameState.status === GameStatus.PLAYING || gameState.status === GameStatus.GAME_OVER)) {
@@ -182,6 +190,58 @@ export class UI {
             this.redrawAll();
         }
     }
+
+    public updateShareLink(partyId: string | null) {
+        if (!partyId) {
+            this.shareLinkContainer.classList.add('hidden');
+            this.shareLink.removeAttribute('data-share-url');
+            return;
+        }
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('party_id', partyId);
+        const link = url.toString();
+        this.shareLink.dataset.shareUrl = link;
+        this.shareLink.title = link;
+        this.shareLinkContainer.classList.remove('hidden');
+    }
+
+    private async copyShareLinkToClipboard() {
+        const link = this.shareLink.dataset.shareUrl;
+        if (!link) return;
+
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(link);
+            } else {
+                const tempInput = document.createElement('input');
+                tempInput.value = link;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+            }
+
+            this.shareLink.classList.add('copied');
+            window.setTimeout(() => this.shareLink.classList.remove('copied'), 800);
+            this.showToast(t('gameScreen.shareToast'));
+        } catch {
+            // No-op: clipboard may be blocked by the browser.
+        }
+    }
+
+    private showToast(message: string) {
+        this.shareToast.textContent = message;
+        this.shareToast.classList.remove('hidden');
+        this.shareToast.classList.add('show');
+        if (this.toastTimeoutId) {
+            window.clearTimeout(this.toastTimeoutId);
+        }
+        this.toastTimeoutId = window.setTimeout(() => {
+            this.shareToast.classList.remove('show');
+            this.shareToast.classList.add('hidden');
+        }, 1200);
+    }
     
     setupGameUI() {
         this._populateRulesPanel();
@@ -207,6 +267,8 @@ export class UI {
         if (screenName === 'game') {
             const gemCanvas = document.getElementById('gem-canvas');
             gemCanvas?.focus();
+        } else {
+            this.shareLinkContainer.classList.add('hidden');
         }
     }
 

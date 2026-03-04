@@ -28,6 +28,20 @@ type GemPlacementInfo = {
     gridPattern: CellState[][];
 };
 
+type PartyGemData = {
+    n: string;
+    x: number;
+    y: number;
+    r: number;
+    f: 0 | 1;
+};
+
+type PartyPayload = {
+    v: 1;
+    d: string;
+    g: PartyGemData[];
+};
+
 export class Game {
     ui: UI;
     secretGrid: CellState[][] = [];
@@ -44,8 +58,15 @@ export class Game {
         this.secretGemMap.clear();
     }
 
+    private _applySecretGems(gems: Gem[]) {
+        this._initSecretGrid();
+        gems.forEach(gem => this._paintGemOnGrid(gem, this.secretGrid, this.secretGemMap));
+    }
+
     showMainMenu() {
         gameState.status = GameStatus.MAIN_MENU;
+        gameState.partyId = null;
+        this.ui.updateShareLink(null);
         this.ui.showScreen('main');
     }
 
@@ -68,13 +89,16 @@ export class Game {
         gameState.difficulty = difficulty;
         gameState.status = GameStatus.PLAYING;
         gameState.interactionMode = InteractionMode.WAVE;
-        this._initSecretGrid();
         
-        gameState.secretGems = this._placeSecretGems();
-        if (gameState.secretGems.length === 0) {
+        const secretGems = this._placeSecretGems();
+        if (secretGems.length === 0) {
             this.showDifficultySelect(); // Fallback if generation fails
             return;
         }
+
+        this._applySecretGems(secretGems);
+        gameState.secretGems = secretGems;
+        gameState.partyId = this._createPartyId(secretGems, difficulty);
 
         gameState.playerGems = [];
         gameState.log = [];
@@ -88,8 +112,42 @@ export class Game {
         gameState.permanentQueryResults = [];
         
         this.ui.setupGameUI();
+        this.ui.updateShareLink(gameState.partyId);
         this.ui.showScreen('game');
         this.ui.redrawAll(); // Initial draw
+    }
+
+    startFromPartyId(partyId: string) {
+        const payload = this._parsePartyId(partyId);
+        if (!payload) {
+            this.showMainMenu();
+            return;
+        }
+
+        const { difficulty, gems } = payload;
+        gameState.difficulty = difficulty;
+        gameState.status = GameStatus.PLAYING;
+        gameState.interactionMode = InteractionMode.WAVE;
+
+        this._applySecretGems(gems);
+        gameState.secretGems = gems;
+        gameState.partyId = partyId;
+
+        gameState.playerGems = [];
+        gameState.log = [];
+        gameState.waveCount = 0;
+        gameState.debugMode = false;
+        gameState.showPlayerPathPreview = false;
+        gameState.selectedLogEntryId = null;
+        gameState.previewSourceEmitterId = null;
+        gameState.activePlayerPath = null;
+        gameState.activePlayerResult = null;
+        gameState.permanentQueryResults = [];
+
+        this.ui.setupGameUI();
+        this.ui.updateShareLink(gameState.partyId);
+        this.ui.showScreen('game');
+        this.ui.redrawAll();
     }
     
     giveUp() {
@@ -600,9 +658,110 @@ export class Game {
             alert("Fehler bei der Level-Erstellung. Bitte versuchen Sie es erneut.");
             return [];
         }
-
-        placedGems.forEach(gem => this._paintGemOnGrid(gem, this.secretGrid, this.secretGemMap));
         console.log("Secret gems placed:", placedGems);
         return placedGems;
+    }
+
+    private _createPartyId(gems: Gem[], difficulty: string): string | null {
+        if (!difficulty || difficulty === DIFFICULTIES.CUSTOM) return null;
+        const payload: PartyPayload = {
+            v: 1,
+            d: difficulty,
+            g: gems.map(gem => ({
+                n: gem.name,
+                x: gem.x,
+                y: gem.y,
+                r: gem.rotation,
+                f: gem.isFlipped ? 1 : 0,
+            }))
+        };
+
+        return this._toBase64Url(JSON.stringify(payload));
+    }
+
+    private _parsePartyId(partyId: string): { difficulty: string; gems: Gem[] } | null {
+        const raw = this._fromBase64Url(partyId);
+        if (!raw) return null;
+
+        let payload: PartyPayload;
+        try {
+            payload = JSON.parse(raw) as PartyPayload;
+        } catch {
+            return null;
+        }
+
+        if (!payload || payload.v !== 1 || !payload.d || !Array.isArray(payload.g)) return null;
+        if (!Object.values(DIFFICULTIES).includes(payload.d)) return null;
+        if (payload.d === DIFFICULTIES.CUSTOM) return null;
+
+        const expectedGemSet = GEM_SETS[payload.d];
+        if (!expectedGemSet || payload.g.length !== expectedGemSet.length) return null;
+        const expectedSet = new Set(expectedGemSet);
+
+        const placedGems: Gem[] = [];
+
+        for (const data of payload.g) {
+            if (!data || typeof data.n !== 'string') return null;
+            if (!expectedSet.has(data.n)) return null;
+            if (typeof data.x !== 'number' || typeof data.y !== 'number') return null;
+            if (typeof data.r !== 'number') return null;
+            if (data.f !== 0 && data.f !== 1) return null;
+
+            const gemDef = this.getGemDefinition(data.n);
+            if (!gemDef) return null;
+
+            const isFlippable = isShapeFlippable(gemDef.gridPattern);
+            if (data.f === 1 && !isFlippable) return null;
+
+            let pattern = gemDef.gridPattern;
+            if (data.f === 1) {
+                pattern = flipGridPatternHorizontally(pattern);
+            }
+
+            const rotations = ((data.r % 360) + 360) % 360;
+            const rotCount = Math.round(rotations / 90);
+            if (rotCount * 90 !== rotations) return null;
+            for (let i = 0; i < rotCount; i++) pattern = rotateGridPattern(pattern);
+
+            const newGem: Gem = {
+                id: `secret_${data.n}_${placedGems.length}`,
+                name: data.n,
+                x: data.x,
+                y: data.y,
+                rotation: rotations,
+                isFlipped: data.f === 1,
+                isFlippable: isFlippable,
+                gridPattern: pattern
+            };
+
+            if (!this._isPlacementValid(newGem, placedGems)) return null;
+            placedGems.push(newGem);
+        }
+
+        return { difficulty: payload.d, gems: placedGems };
+    }
+
+    private _toBase64Url(value: string): string {
+        const encoder = new TextEncoder();
+        const bytes = encoder.encode(value);
+        let binary = '';
+        bytes.forEach(b => { binary += String.fromCharCode(b); });
+        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    }
+
+    private _fromBase64Url(value: string): string | null {
+        try {
+            const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+            const padded = base64 + '==='.slice((base64.length + 3) % 4);
+            const binary = atob(padded);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            const decoder = new TextDecoder();
+            return decoder.decode(bytes);
+        } catch {
+            return null;
+        }
     }
 }

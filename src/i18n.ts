@@ -54,7 +54,9 @@ const translations = {
             modeWave: "Strahl senden",
             modeQuery: "Feld abfragen",
             availableGems: "Verfügbare Edelsteine:",
-            showPath: "Aktuellen Lichtweg anzeigen (F)"
+            showPath: "Aktuellen Lichtweg anzeigen (F)",
+            shareLabel: "Teilen:",
+            shareToast: "Link kopiert"
         },
         endScreen: {
             winTitle: "Gewonnen!",
@@ -225,7 +227,9 @@ const translations = {
             modeWave: "Send Ray",
             modeQuery: "Query Cell",
             availableGems: "Available Gems:",
-            showPath: "Show current light path (F)"
+            showPath: "Show current light path (F)",
+            shareLabel: "Share:",
+            shareToast: "Link copied"
         },
         endScreen: {
             winTitle: "You Win!",
@@ -397,7 +401,9 @@ const translations = {
             modeWave: "Envoyer un rayon",
             modeQuery: "Interroger une case",
             availableGems: "Gemmes disponibles :",
-            showPath: "Afficher le trajet actuel de la lumière (F)"
+            showPath: "Afficher le trajet actuel de la lumière (F)",
+            shareLabel: "Partager :",
+            shareToast: "Lien copié"
         },
         endScreen: {
             winTitle: "Gagné !",

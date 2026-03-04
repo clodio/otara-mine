@@ -14,4 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Make game instance accessible for debugging
     window.game = game; 
+
+    const partyId = new URLSearchParams(window.location.search).get('party_id');
+    if (partyId) {
+        game.startFromPartyId(partyId);
+    }
 });
