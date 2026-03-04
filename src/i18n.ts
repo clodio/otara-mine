@@ -24,6 +24,10 @@ const translations = {
             MEDIUM_desc: "Eine neue Herausforderung. Ein transparenter Prisma-Stein lenkt das Licht ab, ohne es zu färben.",
             HARD: "Schwer",
             HARD_desc: "Expertenmodus. Neben dem transparenten kommt ein schwarzer, Licht absorbierender Stein in Spiel.",
+            STAR_NORMAL: "Star Normal",
+            STAR_NORMAL_desc: "Eine neue Herausforderung mit speziellen Stern-Steinen.",
+            STAR_HARD: "Star Hard",
+            STAR_HARD_desc: "Die ultimative Herausforderung mit allen speziellen Stern-Steinen und einem schwarzen Loch.",
             CUSTOM: "Eigenes Level",
             CUSTOM_desc: "Wähle deine eigenen Steine und erstelle eine neue Herausforderung."
         },
@@ -197,6 +201,10 @@ const translations = {
             MEDIUM_desc: "A new challenge. A transparent prism gem deflects light without coloring it.",
             HARD: "Hard",
             HARD_desc: "Expert mode. In addition to the transparent gem, a black, light-absorbing gem comes into play.",
+            STAR_NORMAL: "Star Normal",
+            STAR_NORMAL_desc: "A new challenge with special star gems.",
+            STAR_HARD: "Star Hard",
+            STAR_HARD_desc: "The ultimate challenge with special star gems and blackhole.",
             CUSTOM: "Custom Level",
             CUSTOM_desc: "Choose your own gems and create a new challenge."
         },
@@ -371,6 +379,10 @@ const translations = {
             MEDIUM_desc: "Un nouveau défi. Une gemme prisme transparente dévie la lumière sans la colorer.",
             HARD: "Difficile",
             HARD_desc: "Mode expert. En plus de la gemme transparente, une gemme noire absorbant la lumière entre en jeu.",
+            STAR_NORMAL: "Star Normal",
+            STAR_NORMAL_desc: "Un nouveau défi avec des gemmes étoile spéciales.",
+            STAR_HARD: "Star Difficile",
+            STAR_HARD_desc: "Le défi ultime avec des gemmes étoile spéciales et un trou noir.",
             CUSTOM: "Niveau personnalisé",
             CUSTOM_desc: "Choisissez vos gemmes et créez un nouveau défi."
         },

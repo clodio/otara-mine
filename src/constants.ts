@@ -6,6 +6,8 @@ export const DIFFICULTIES = {
     NORMAL: 'NORMAL',
     MEDIUM: 'MEDIUM',
     HARD: 'HARD',
+    STAR_NORMAL: 'STAR_NORMAL',
+    STAR_HARD: 'STAR_HARD',
     CUSTOM: 'CUSTOM',
 };
 
@@ -124,6 +126,17 @@ export const GEMS: { [key: string]: any } = {
         name: 'SCHWARZ', color: COLORS.SCHWARZ_GEM, baseGems: [], special: 'absorbs',
         gridPattern: [[CellState.ABSORB, CellState.ABSORB]],
     },
+    SUN: { 
+        name: 'SUN', color: COLORS.GELB, baseGems: ["GELB"], gridPattern: [[4,1,5],[1,1,1],[3,1,2]] 
+    },
+    SUN_WHITE: { 
+         name: 'SUN_WHITE', color: COLORS.WEISS, baseGems: ["WEISS"], gridPattern: [[4,1,1,5],[1,1,1,1]] 
+    },
+    BLUE_DIAMOND: { name: 'BLUE_DIAMOND', color: COLORS.BLAU, baseGems: ["BLAU"], gridPattern: [[4,5],[3,2]] },
+    RED_POINT: { name: 'RED_POINT', color: COLORS.ROT, baseGems: ["ROT"], gridPattern: [[1]] },
+    RED_DIAMOND: { name: 'RED_DIAMOND', color: COLORS.ROT, baseGems: ["ROT"], gridPattern: [[4,5],[3,2]] },
+    BLACK_HOLE: { name: 'BLACK_HOLE', color: COLORS.SCHWARZ_GEM, baseGems: ["SCHWARZ"], special: 'absorbs', gridPattern: [[1]] },
+
 };
 
 export const CUSTOM_SHAPES: { [key: string]: { nameKey: string, gridPattern: CellState[][] } } = {
@@ -147,6 +160,8 @@ export const GEM_SETS: { [key: string]: string[] } = {
     [DIFFICULTIES.NORMAL]: ['GELB', 'ROT', 'BLAU', 'WEISS_RAUTE', 'WEISS_DREIECK'],
     [DIFFICULTIES.MEDIUM]: ['GELB', 'ROT', 'BLAU', 'WEISS_RAUTE', 'WEISS_DREIECK', 'TRANSPARENT'],
     [DIFFICULTIES.HARD]: ['GELB', 'ROT', 'BLAU', 'WEISS_RAUTE', 'WEISS_DREIECK', 'TRANSPARENT', 'SCHWARZ'],
+    [DIFFICULTIES.STAR_NORMAL]: ['SUN', 'SUN_WHITE', 'BLUE_DIAMOND', 'RED_POINT', 'RED_DIAMOND'],
+    [DIFFICULTIES.STAR_HARD]: ['SUN', 'SUN_WHITE', 'BLUE_DIAMOND', 'RED_POINT', 'RED_DIAMOND','BLACK_HOLE'],
 };
 
 export const RATINGS: { [key: string]: { limit: number; textKey: string }[] } = {
@@ -171,6 +186,20 @@ export const RATINGS: { [key: string]: { limit: number; textKey: string }[] } = 
         { limit: Infinity, textKey: 'ratings.medium.5' },
     ],
     [DIFFICULTIES.HARD]: [
+        { limit: 15, textKey: 'ratings.hard.1' },
+        { limit: 18, textKey: 'ratings.hard.2' },
+        { limit: 21, textKey: 'ratings.hard.3' },
+        { limit: 25, textKey: 'ratings.hard.4' },
+        { limit: Infinity, textKey: 'ratings.hard.5' },
+    ],
+    [DIFFICULTIES.STAR_NORMAL]: [
+        { limit: 15, textKey: 'ratings.hard.1' },
+        { limit: 18, textKey: 'ratings.hard.2' },
+        { limit: 21, textKey: 'ratings.hard.3' },
+        { limit: 25, textKey: 'ratings.hard.4' },
+        { limit: Infinity, textKey: 'ratings.hard.5' },
+    ],
+    [DIFFICULTIES.STAR_HARD]: [
         { limit: 15, textKey: 'ratings.hard.1' },
         { limit: 18, textKey: 'ratings.hard.2' },
         { limit: 21, textKey: 'ratings.hard.3' },

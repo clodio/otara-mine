@@ -294,7 +294,7 @@ export class UI {
 
     private populateDifficultyOptions() {
         this.difficultyOptions.innerHTML = '';
-        [DIFFICULTIES.TRAINING, DIFFICULTIES.NORMAL, DIFFICULTIES.MEDIUM, DIFFICULTIES.HARD].forEach(diffKey => {
+        [DIFFICULTIES.TRAINING, DIFFICULTIES.NORMAL, DIFFICULTIES.MEDIUM, DIFFICULTIES.HARD, DIFFICULTIES.STAR_NORMAL, DIFFICULTIES.STAR_HARD].forEach(diffKey => {
             const btn = document.createElement('button');
             btn.innerHTML = `${t('difficulty.' + diffKey)}<div class="difficulty-desc">${t('difficulty.' + diffKey + '_desc')}</div>`;
             btn.onclick = () => this.game.start(diffKey);

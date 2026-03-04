@@ -370,6 +370,14 @@ export class CustomCreatorUI {
         };
         
         this.state.gems.push(newGemDef);
+        
+        // Console log for copying to constants.ts
+        const gridPatternCode = JSON.stringify(finalGridPattern);
+        const baseGemsCode = JSON.stringify(colorDef.baseGems);
+        const consoleCode = `${gemName}: { name: '${gemName}', color: COLORS.${selectedColorKey}, baseGems: ${baseGemsCode}, gridPattern: ${gridPatternCode} },`;
+        console.log('Add this to export const GEMS in constants.ts:');
+        console.log(consoleCode);
+        
         this.updateCustomGemList();
         this.validateCustomSet();
     }
