@@ -108,8 +108,11 @@ export class UI {
 
     private bindGlobalEvents() {
         this.langSwitcher.addEventListener('click', () => {
-            const newLang: Language = getLanguage() === 'de' ? 'en' : 'de';
-            setLanguage(newLang);
+            const order: Language[] = ['de', 'en', 'fr'];
+            const current = getLanguage();
+            const idx = order.indexOf(current);
+            const next = order[(idx + 1) % order.length] || 'en';
+            setLanguage(next);
         });
 
         this.btnStartGame.addEventListener('click', () => this.game.showDifficultySelect());

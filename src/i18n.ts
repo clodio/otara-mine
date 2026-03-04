@@ -1,6 +1,6 @@
 
 
-export type Language = 'de' | 'en';
+export type Language = 'de' | 'en' | 'fr';
 
 const translations = {
     de: {
@@ -345,6 +345,178 @@ const translations = {
             },
         }
     }
+    ,
+    fr: {
+        lang: {
+            name: "Français",
+            flag: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><path d="M0 0h3v2H0z" fill="#fff"/><path d="M0 0h1v2H0z" fill="#0055A4"/><path d="M2 0h1v2H2z" fill="#EF4135"/></svg>`,
+            switch: "Changer de langue",
+        },
+        mainMenu: {
+            startGame: "Commencer la partie",
+            byline: "par Dirk Aporius et Google Studio AI",
+            basedOn: "basé sur le <a href=\"https://boardgamegeek.com/boardgame/424152/orapa-mine\" target=\"_blank\" rel=\"noopener\">jeu de société</a>",
+        },
+        difficulty: {
+            title: "Difficulté",
+            TRAINING: "Entraînement",
+            TRAINING_desc: "Idéal pour apprendre le jeu, affiche le trajet des rayons lumineux.",
+            NORMAL: "Normal",
+            NORMAL_desc: "Les bases. Découvrez les gemmes colorées et blanches.",
+            MEDIUM: "Moyen",
+            MEDIUM_desc: "Un nouveau défi. Une gemme prisme transparente dévie la lumière sans la colorer.",
+            HARD: "Difficile",
+            HARD_desc: "Mode expert. En plus de la gemme transparente, une gemme noire absorbant la lumière entre en jeu.",
+            CUSTOM: "Niveau personnalisé",
+            CUSTOM_desc: "Choisissez vos gemmes et créez un nouveau défi."
+        },
+        customCreator: {
+            title: "Créer un niveau personnalisé",
+            selectColor: "1. Choisir une couleur",
+            selectShape: "2. Choisir une forme",
+            addGem: "Ajouter une gemme +",
+            levelSet: "Ensemble de niveaux (votre sélection)",
+            startLevel: "Démarrer le niveau",
+            alert: {
+                selectColorAndShape: "Veuillez d'abord choisir une couleur et une forme."
+            }
+        },
+        customDesigner: {
+            title: "Concevoir une forme personnalisée",
+            instruction: "Cliquez sur les cellules pour changer leur type (Vide, Bloc, Diagonale). Concevez une gemme dans la grille 4x4.",
+            preview: "Aperçu (taille recadrée) :",
+            finish: "Terminer la conception",
+        },
+        gameScreen: {
+            tabs: {
+                actions: "Actions",
+                logbook: "Journal",
+                rules: "Règles",
+            },
+            interactionMode: "Mode d'action :",
+            modeWave: "Envoyer un rayon",
+            modeQuery: "Interroger une case",
+            availableGems: "Gemmes disponibles :",
+            showPath: "Afficher le trajet actuel de la lumière (F)"
+        },
+        endScreen: {
+            winTitle: "Gagné !",
+            lossTitle: "Perdu !",
+            stats: "Vous avez résolu la mine en {{count}} requêtes.",
+            statsLoss: "Vous n'avez pas trouvé la solution après {{count}} requêtes.",
+            retry: "Veuillez réessayer.",
+            solutionLabel: {
+                correct: "Solution correcte :",
+                alternative: "Solution alternative trouvée ! Votre solution (transparente) :",
+                yourInput: "Votre saisie (par-dessus la solution correcte) :",
+            },
+            ratingLegendTitle: "Évaluation pour {{difficulty}}",
+            ratingLegend: {
+                upTo: "jusqu'à {{end}} requêtes",
+                range: "{{start}} - {{end}} requêtes",
+                moreThan: "plus de {{start}} requêtes",
+            }
+        },
+        buttons: {
+            back: "Retour",
+            newLevel: "Nouveau niveau",
+            menu: "Menu",
+            submitSolution: "Valider la solution",
+            giveUp: "Abandonner",
+            remove: "Retirer",
+        },
+        rules: {
+            title: "Règles du jeu",
+            objectiveTitle: "Objectif :",
+            objective: "Trouvez la position et l'orientation des gemmes cachées.",
+            item1: "Vous avez deux méthodes pour obtenir des informations :",
+            item2: "<strong>Envoyer un rayon :</strong> Envoyez une onde lumineuse depuis un émetteur sur le bord. La couleur et la position de sortie révèlent quelles gemmes ont été touchées.",
+            item3: "<strong>Interroger une case :</strong> Interrogez directement une case. Cela vous indique la couleur de base de la gemme (ou si la case est vide), mais pas sa forme.",
+            item4: "Faites glisser les gemmes de la barre d'outils sur le plateau. Vous pouvez les déplacer et les faire pivoter.",
+            item5: "Un clic sur une gemme posée la fait pivoter de 90°, un appui long la retourne (si possible).",
+            item6: "Les gemmes ne peuvent pas se chevaucher ni être côte à côte.",
+            item7: "Appuyez sur 'n' pour un nouveau niveau ou sur 'esc' pour revenir au menu.",
+            colorMixingTitle: "Mélange des couleurs",
+            colorMixingDesc: "Un faisceau est dévié par des gemmes colorées et prend leur couleur. S'il touche plusieurs gemmes, les couleurs se mélangent :",
+            basicRules: "Méthodes de jeu",
+            panel: {
+                item1: "<strong>Envoyer un rayon :</strong> Cliquez sur un émetteur au bord pour envoyer une onde lumineuse. Cela donne des indices sur le trajet et les couleurs touchées.",
+                item2: "<strong>Interroger une case :</strong> Changez de mode d'action et cliquez sur une case pour connaître sa couleur de base.",
+                item3: "Faites glisser les gemmes sur le plateau pour reproduire la solution.",
+                item4: "Cliquez sur une gemme posée pour la faire pivoter. Un appui long la retourne.",
+                item5: "Les gemmes ne peuvent pas se chevaucher ni être côte à côte.",
+            }
+        },
+        tooltips: {
+            absorbs: "Absorbe la lumière.",
+            reflectsOnly: "Réfléchit seulement, ne colore pas.",
+            addsColor: "Ajoute la couleur '{{color}}'."
+        },
+        colors: {
+            red: 'Rouge',
+            yellow: 'Jaune',
+            blue: 'Bleu',
+            white: 'Blanc',
+            transparent: 'Transparent',
+            black: 'Noir',
+            purple: 'Violet',
+            skyBlue: 'Bleu ciel',
+            green: 'Vert',
+            lightRed: 'Rouge clair',
+            orange: 'Orange',
+            lightYellow: 'Jaune clair',
+            lightPurple: 'Violet clair',
+            darkGray: 'Gris foncé',
+            lightGreen: 'Vert clair',
+            lightOrange: 'Orange clair',
+            gray: 'Gris',
+        },
+        shapes: {
+            rightTriangle: "Triangle rectangle",
+            parallelogram: "Parallélogramme",
+            bigTriangle: "Grand triangle",
+            diamond: "Losange",
+            smallTriangle: "Petit triangle",
+            absorber: "Absorbeur",
+            lShape: "Forme en L",
+            tShape: "Forme en T",
+            square: "Carré",
+            bar: "Barre",
+            small: "Petit",
+            custom: "Forme personnalisée",
+        },
+        log: {
+            absorbed: "Absorbé",
+            noColor: "Sans couleur",
+            unknownMix: "Mélange inconnu",
+            query: "Requête ({{x}},{{y}})",
+            empty: "Vide",
+        },
+        validation: {
+            exactOneRed: "Requiert : <strong>exactement 1 gemme rouge</strong>",
+            exactOneYellow: "Requiert : <strong>exactement 1 gemme jaune</strong>",
+            exactOneBlue: "Requiert : <strong>exactement 1 gemme bleue</strong>",
+            atLeastOneWhite: "Requiert : <strong>au moins 1 gemme blanche</strong>",
+            maxTwoWhite: "Autorisé : <strong>au maximum 2 gemmes blanches</strong>",
+            maxTwoTransparent: "Autorisé : <strong>au maximum 2 gemmes transparentes</strong>",
+            maxOneBlack: "Autorisé : <strong>au maximum 1 gemme noire</strong>",
+            levelIsValid: "Niveau valide",
+        },
+        ratings: {
+            training: {
+                "1": "Très bien", "2": "Bien", "3": "Moyen", "4": "À améliorer"
+            },
+            normal: {
+                "1": "Un véritable expert des gemmes", "2": "Un pro qu'on ne peut pas tromper", "3": "Bon chasseur de gemmes", "4": "Youpi, toutes les gemmes trouvées !", "5": "Au moins, toutes les gemmes ont été trouvées."
+            },
+            medium: {
+                "1": "Magistral ! Presque aucune requête de trop.", "2": "Très impressionnant ! Vous savez ce que vous faites.", "3": "Belle performance ! Vous avez pris le coup.", "4": "Bien joué ! Tous les trésors récupérés.", "5": "Patience et persévérance mènent au succès !"
+            },
+            hard: {
+                "1": "Légendaire ! Une performance pour les livres d'histoire.", "2": "Remarquable ! Même les experts sont impressionnés.", "3": "Niveau expert ! Vous assurez.", "4": "Un dur labeur, mais réussi !", "5": "Ouf, c'était juste, mais gagné !"
+            },
+        }
+    }
 };
 
 /**
@@ -356,13 +528,13 @@ const translations = {
  */
 function determineInitialLanguage(): Language {
     const savedLang = localStorage.getItem('orapa-lang');
-    if (savedLang === 'de' || savedLang === 'en') {
+    if (savedLang === 'de' || savedLang === 'en' || savedLang === 'fr') {
         return savedLang as Language;
     }
 
     const browserLang = navigator.language.slice(0, 2).toLowerCase();
-    if (browserLang === 'de') {
-        return 'de';
+    if (browserLang === 'de' || browserLang === 'fr') {
+        return browserLang as Language;
     }
 
     return 'en';
