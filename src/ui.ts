@@ -326,6 +326,8 @@ export class UI {
         const gemDef = this.getGemDefinition(gemName);
         if (!gemDef) return '';
     
+        // Special handling for BLACK_HOLE
+        if (gemDef.name === 'BLACK_HOLE') return t('tooltips.blackHole');
         if (gemDef.special === 'absorbs') return t('tooltips.absorbs');
         if (gemDef.baseGems.length === 0) return t('tooltips.reflectsOnly');
        
@@ -520,7 +522,8 @@ export class UI {
         });
     }
 
-    public getPathColorName(result: { colors: string[], absorbed?: boolean }): string {
+    public getPathColorName(result: { colors: string[], absorbed?: boolean, exitId?: string }): string {
+        if (result.exitId === 'Trapped') return t('log.trapped');
         if (result.absorbed) return t('log.absorbed');
         if (result.colors.length === 0) return t('log.noColor');
         const key = [...result.colors].sort().join(',');

@@ -34,6 +34,66 @@ function move(pos: { x: number; y: number }, dir: Direction): void {
 }
 
 /**
+ * Gets adjacent cell positions (up, down, left, right)
+ */
+function getAdjacentCells(pos: { x: number, y: number }): { x: number, y: number }[] {
+    return [
+        { x: pos.x, y: pos.y - 1 }, // Up
+        { x: pos.x, y: pos.y + 1 }, // Down
+        { x: pos.x - 1, y: pos.y }, // Left
+        { x: pos.x + 1, y: pos.y }, // Right
+    ];
+}
+
+/**
+ * Checks if a position contains a BLACK_HOLE gem
+ */
+function isBlackHole(pos: { x: number, y: number }, gemMap: Map<string, Gem>, game: Game): boolean {
+    if (pos.x < 0 || pos.x >= GRID_WIDTH || pos.y < 0 || pos.y >= GRID_HEIGHT) {
+        return false;
+    }
+    const gemKey = `${pos.y},${pos.x}`;
+    const gem = gemMap.get(gemKey);
+    if (!gem) return false;
+    
+    const gemDef = (game as any).getGemDefinition(gem.name);
+    return gemDef && gemDef.name === 'BLACK_HOLE';
+}
+
+/**
+ * Calculates the refracted direction when passing by a BLACK_HOLE
+ * Returns the new direction after refraction (90 degrees along the edge)
+ */
+function getRefractionDirection(currentPos: { x: number, y: number }, currentDir: Direction, blackHolePos: { x: number, y: number }): Direction | null {
+    // Vector from BLACK_HOLE to current position
+    const dx = currentPos.x - blackHolePos.x;
+    const dy = currentPos.y - blackHolePos.y;
+    
+    // Deflect 90 degrees along the perimeter of the BLACK_HOLE
+    // The deflection is perpendicular to the approach direction, guiding around the black hole
+    
+    if (currentDir === Direction.UP) {
+        // Coming from below, deflect based on horizontal offset
+        if (dx < 0) return Direction.RIGHT; 
+        if (dx > 0) return Direction.LEFT; 
+    } else if (currentDir === Direction.DOWN) {
+        // Coming from above, deflect based on horizontal offset
+        if (dx < 0) return Direction.RIGHT; 
+        if (dx > 0) return Direction.LEFT; 
+    } else if (currentDir === Direction.LEFT) {
+        // Coming from right, deflect based on vertical offset
+        if (dy < 0) return Direction.UP;    
+        if (dy > 0) return Direction.DOWN;  
+    } else if (currentDir === Direction.RIGHT) {
+        // Coming from left, deflect based on vertical offset
+        if (dy < 0) return Direction.DOWN;    
+        if (dy > 0) return Direction.UP;  
+    }
+    
+    return null;
+}
+
+/**
  * Traces a light wave's path through a logic grid.
  * @param grid The logic grid with CellState values.
  * @param gemMap A map from "y,x" coordinates to the Gem occupying that cell.
@@ -59,8 +119,23 @@ export function tracePath(
     const path: {x: number, y: number}[] = [];
     const hitColors = new Set<string>();
     const hitGems = new Set<string>();
+    
+    // Track BLACK_HOLE refraction positions to prevent multiple refractions by the same laser
+    const refractedByBlackHoles = new Set<string>();
+    // Track pendings refraction to apply at next iteration
+    let pendingRefractionDir: Direction | null = null;
+    let pendingRefractionTarget: { x: number, y: number } | null = null;
 
     for (let step = 0; step < MAX_STEPS; step++) {
+        // Check if we're at the refraction target position
+        if (pendingRefractionTarget && currentPos.x === pendingRefractionTarget.x && currentPos.y === pendingRefractionTarget.y && pendingRefractionDir !== null) {
+            // Apply the refractive direction at the target position
+            currentDir = pendingRefractionDir;
+            pendingRefractionDir = null;
+            pendingRefractionTarget = null;
+            path.push({ x: currentPos.x + 0.5, y: currentPos.y + 0.5 });
+        }
+        
         move(currentPos, currentDir);
         
         // Add point for drawing
@@ -86,8 +161,51 @@ export function tracePath(
 
         const cellState = grid[currentPos.y][currentPos.x];
         
-        if (cellState === CellState.EMPTY) {
-            continue; // Keep moving in the same direction
+        // Check for BLACK_HOLE refraction when in an EMPTY cell
+        // Detect if adjacent to BLACK_HOLE to queue refraction at specific position
+        if (cellState === CellState.EMPTY && pendingRefractionDir === null) {
+            // Check all adjacent cells for BLACK_HOLE
+            const adjacentCells = getAdjacentCells(currentPos);
+            
+            for (const adjPos of adjacentCells) {
+                if (isBlackHole(adjPos, gemMap, game)) {
+                    // Refraction key to track if already refracted by this BLACK_HOLE
+                    const refractionKey = `${adjPos.y},${adjPos.x}`;
+                    
+                    // Only queue refraction if we haven't already refracted past this BLACK_HOLE
+                    if (!refractedByBlackHoles.has(refractionKey)) {
+                        const refractedDir = getRefractionDirection(currentPos, currentDir, adjPos);
+                        if (refractedDir !== null && refractedDir !== currentDir) {
+                            // Mark this BLACK_HOLE as the source of refraction
+                            refractedByBlackHoles.add(refractionKey);
+                            
+                            // Calculate the refraction target position based on the ray's current direction
+                            // This is where the ray will be when refraction should be applied
+                            let targetPos: { x: number, y: number };
+                            switch (currentDir) {
+                                case Direction.UP:
+                                    targetPos = { x: currentPos.x, y: currentPos.y - 1 };
+                                    break;
+                                case Direction.DOWN:
+                                    targetPos = { x: currentPos.x, y: currentPos.y + 1 };
+                                    break;
+                                case Direction.RIGHT:
+                                    targetPos = { x: currentPos.x + 1, y: currentPos.y };
+                                    break;
+                                case Direction.LEFT:
+                                    targetPos = { x: currentPos.x - 1, y: currentPos.y };
+                                    break;
+                            }
+                            
+                            // Queue the refraction for when we reach the target position
+                            pendingRefractionDir = refractedDir;
+                            pendingRefractionTarget = targetPos;
+                            break;
+                        }
+                    }
+                }
+            }
+            continue; // Continue through EMPTY cell without further processing
         }
 
         // Add the current cell center as a path node before reflection
@@ -105,8 +223,18 @@ export function tracePath(
             }
         }
         
+        // Direct absorption or BLACK_HOLE hit
         if (cellState === CellState.ABSORB) {
             return { exitId: 'Absorbed', colors: [], path, absorbed: true };
+        }
+        
+        // Check if we hit a BLACK_HOLE directly
+        if (hitGem) {
+            const hitGemDef = (game as any).getGemDefinition(hitGem.name);
+            if (hitGemDef && hitGemDef.name === 'BLACK_HOLE') {
+                // Direct BLACK_HOLE hit = absorption
+                return { exitId: 'Absorbed', colors: [], path, absorbed: true };
+            }
         }
 
         const newDir = getReflection(cellState, currentDir);
@@ -118,6 +246,6 @@ export function tracePath(
         currentDir = newDir;
     }
 
-    // Loop detected
-    return { exitId: 'Loop?', colors: [...hitColors], path, absorbed: false };
+    // Loop detected or laser trapped inside grid
+    return { exitId: 'Trapped', colors: [...hitColors], path, absorbed: false };
 }

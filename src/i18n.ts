@@ -112,6 +112,7 @@ const translations = {
         },
         tooltips: {
             absorbs: "Absorbiert Licht.",
+            blackHole: "Absorbiert direktes Licht. Lenkt nahes Licht einmal ab (Brechung). Kann Strahlen einfangen.",
             reflectsOnly: "Reflektiert nur, färbt nicht.",
             addsColor: "Fügt Farbe '{{color}}' hinzu."
         },
@@ -150,6 +151,7 @@ const translations = {
         },
         log: {
             absorbed: "Absorbiert",
+            trapped: "Der Strahl ist gefangen",
             noColor: "Keine Farbe",
             unknownMix: "Unbekannte Mischung",
             query: "Abfrage ({{x}},{{y}})",
@@ -289,6 +291,7 @@ const translations = {
         },
         tooltips: {
             absorbs: "Absorbs light.",
+            blackHole: "Absorbs direct light. Deflects nearby light once (refraction). Can trap beams.",
             reflectsOnly: "Only reflects, does not color.",
             addsColor: "Adds '{{color}}' color."
         },
@@ -327,6 +330,7 @@ const translations = {
         },
         log: {
             absorbed: "Absorbed",
+            trapped: "The beam is trapped",
             noColor: "No Color",
             unknownMix: "Unknown Mix",
             query: "Query ({{x}},{{y}})",
@@ -467,6 +471,7 @@ const translations = {
         },
         tooltips: {
             absorbs: "Absorbe la lumière.",
+            blackHole: "Absorbe la lumière directe. Dévie la lumière proche une fois (réfraction). Peut piéger les faisceaux.",
             reflectsOnly: "Réfléchit seulement, ne colore pas.",
             addsColor: "Ajoute la couleur '{{color}}'."
         },
@@ -505,6 +510,7 @@ const translations = {
         },
         log: {
             absorbed: "Absorbé",
+            trapped: "Le laser est piégé",
             noColor: "Sans couleur",
             unknownMix: "Mélange inconnu",
             query: "Requête ({{x}},{{y}})",

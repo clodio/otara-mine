@@ -465,7 +465,8 @@ export class Renderer {
         this._clearCanvas(this.pathCtx);
     }
     
-    public getPathColor(result: { colors: string[], absorbed?: boolean }): string {
+    public getPathColor(result: { colors: string[], absorbed?: boolean, exitId?: string }): string {
+        if (result.exitId === 'Trapped') return COLORS.ABSORBIERT;
         if (result.absorbed) return COLORS.ABSORBIERT;
         if (result.colors.length === 0) return 'rgba(236, 240, 241, 0.7)';
         const key = [...result.colors].sort().join(',');
