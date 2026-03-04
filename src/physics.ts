@@ -15,6 +15,14 @@ const reflectionMap: { [key in CellState]?: { [key in Direction]?: Direction } }
         [Direction.DOWN]: Direction.UP,
         [Direction.LEFT]: Direction.RIGHT,
     },
+    [CellState.MIRROR_V]: {
+        [Direction.RIGHT]: Direction.LEFT,
+        [Direction.LEFT]: Direction.RIGHT,
+    },
+    [CellState.MIRROR_H]: {
+        [Direction.UP]: Direction.DOWN,
+        [Direction.DOWN]: Direction.UP,
+    },
     // '\' slope surfaces (Top-Left and Bottom-Right triangles)
     [CellState.TRIANGLE_TR]: {
         [Direction.UP]: Direction.LEFT,
@@ -48,6 +56,8 @@ const rotationMap: { [key in CellState]: CellState } = {
     [CellState.EMPTY]: CellState.EMPTY,
     [CellState.BLOCK]: CellState.BLOCK,
     [CellState.ABSORB]: CellState.ABSORB,
+    [CellState.MIRROR_V]: CellState.MIRROR_H,
+    [CellState.MIRROR_H]: CellState.MIRROR_V,
     [CellState.TRIANGLE_TL]: CellState.TRIANGLE_TR,
     [CellState.TRIANGLE_TR]: CellState.TRIANGLE_BR,
     [CellState.TRIANGLE_BR]: CellState.TRIANGLE_BL,
@@ -58,6 +68,8 @@ const flipMap: { [key in CellState]: CellState } = {
     [CellState.EMPTY]: CellState.EMPTY,
     [CellState.BLOCK]: CellState.BLOCK,
     [CellState.ABSORB]: CellState.ABSORB,
+    [CellState.MIRROR_V]: CellState.MIRROR_V,
+    [CellState.MIRROR_H]: CellState.MIRROR_H,
     [CellState.TRIANGLE_TL]: CellState.TRIANGLE_TR,
     [CellState.TRIANGLE_TR]: CellState.TRIANGLE_TL,
     [CellState.TRIANGLE_BR]: CellState.TRIANGLE_BL,

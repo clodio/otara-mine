@@ -14,6 +14,8 @@ const cellEdges: { [key in CellState]: boolean[] } = {
     [CellState.EMPTY]:       [false, false, false, false],
     [CellState.BLOCK]:       [true,  true,  true,  true],
     [CellState.ABSORB]:      [true,  true,  true,  true],
+    [CellState.MIRROR_V]:    [false, true,  false, true],
+    [CellState.MIRROR_H]:    [true,  false, true,  false],
     [CellState.TRIANGLE_TL]: [true,  false, false, true],  // Edges are top and left
     [CellState.TRIANGLE_TR]: [true,  true,  false, false], // Edges are top and right
     [CellState.TRIANGLE_BR]: [false, true,  true,  false], // Edges are bottom and right

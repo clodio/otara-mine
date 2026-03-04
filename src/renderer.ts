@@ -307,13 +307,41 @@ export class Renderer {
             for (let c = 0; c < gridPattern[r].length; c++) {
                 if (gridPattern[r][c] !== CellState.EMPTY) {
                     const canvasCoords = this._gridToCanvasCoords(x + c, y + r);
-                    this.drawCellShape(ctx, canvasCoords.x, canvasCoords.y, this.cellWidth, this.cellHeight, gridPattern[r][c], color, isInvalid, isHovered);
+                    this.drawCellShape(
+                        ctx,
+                        canvasCoords.x,
+                        canvasCoords.y,
+                        this.cellWidth,
+                        this.cellHeight,
+                        gridPattern[r][c],
+                        color,
+                        isInvalid,
+                        isHovered,
+                        r,
+                        c,
+                        gridPattern.length,
+                        gridPattern[r].length
+                    );
                 }
             }
         }
     }
     
-    private drawCellShape(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, state: CellState, color: string, isInvalid = false, isHovered = false) {
+    private drawCellShape(
+        ctx: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        state: CellState,
+        color: string,
+        isInvalid = false,
+        isHovered = false,
+        rowIndex?: number,
+        colIndex?: number,
+        rowCount?: number,
+        colCount?: number
+    ) {
         ctx.save();
         
         if (this.isTransparentColor(color)) {
@@ -344,22 +372,53 @@ export class Renderer {
             }
         }
     
-        ctx.beginPath();
-        const path = new Path2D();
-        switch (state) {
-            case CellState.BLOCK: case CellState.ABSORB:
-                path.rect(x, y, w, h); break;
-            case CellState.TRIANGLE_TL:
-                path.moveTo(x, y); path.lineTo(x + w, y); path.lineTo(x, y + h); path.closePath(); break;
-            case CellState.TRIANGLE_TR:
-                path.moveTo(x, y); path.lineTo(x + w, y); path.lineTo(x + w, y + h); path.closePath(); break;
-            case CellState.TRIANGLE_BR:
-                path.moveTo(x + w, y); path.lineTo(x + w, y + h); path.lineTo(x, y + h); path.closePath(); break;
-            case CellState.TRIANGLE_BL:
-                path.moveTo(x, y); path.lineTo(x, y + h); path.lineTo(x + w, y + h); path.closePath(); break;
+        if (state === CellState.MIRROR_V || state === CellState.MIRROR_H) {
+            const stripeThickness = (state === CellState.MIRROR_V ? h : w) / 8;
+            let stripeX = x;
+            let stripeY = y;
+            let stripeW = w;
+            let stripeH = h;
+
+            if (state === CellState.MIRROR_H) {
+                stripeH = stripeThickness;
+                if (rowIndex === 0) {
+                    stripeY = y + h - stripeH;
+                } else if (rowCount !== undefined && rowIndex === rowCount - 1) {
+                    stripeY = y;
+                } else {
+                    stripeY = y + (h - stripeH) / 2;
+                }
+            } else {
+                stripeW = stripeThickness;
+                if (colIndex === 0) {
+                    stripeX = x + w - stripeW;
+                } else if (colCount !== undefined && colIndex === colCount - 1) {
+                    stripeX = x;
+                } else {
+                    stripeX = x + (w - stripeW) / 2;
+                }
+            }
+
+            ctx.fillRect(stripeX, stripeY, stripeW, stripeH);
+            ctx.strokeRect(stripeX, stripeY, stripeW, stripeH);
+        } else {
+            ctx.beginPath();
+            const path = new Path2D();
+            switch (state) {
+                case CellState.BLOCK: case CellState.ABSORB:
+                    path.rect(x, y, w, h); break;
+                case CellState.TRIANGLE_TL:
+                    path.moveTo(x, y); path.lineTo(x + w, y); path.lineTo(x, y + h); path.closePath(); break;
+                case CellState.TRIANGLE_TR:
+                    path.moveTo(x, y); path.lineTo(x + w, y); path.lineTo(x + w, y + h); path.closePath(); break;
+                case CellState.TRIANGLE_BR:
+                    path.moveTo(x + w, y); path.lineTo(x + w, y + h); path.lineTo(x, y + h); path.closePath(); break;
+                case CellState.TRIANGLE_BL:
+                    path.moveTo(x, y); path.lineTo(x, y + h); path.lineTo(x + w, y + h); path.closePath(); break;
+            }
+            ctx.fill(path);
+            ctx.stroke(path);
         }
-        ctx.fill(path);
-        ctx.stroke(path);
         ctx.restore();
     }
     
@@ -454,7 +513,21 @@ export class Renderer {
         for (let r = 0; r < pHeight; r++) {
             for (let c = 0; c < pWidth; c++) {
                 if (pattern[r][c] !== CellState.EMPTY) {
-                    this.drawCellShape(ctx, c * cellSize + offsetX, r * cellSize + offsetY, cellSize, cellSize, pattern[r][c], color);
+                    this.drawCellShape(
+                        ctx,
+                        c * cellSize + offsetX,
+                        r * cellSize + offsetY,
+                        cellSize,
+                        cellSize,
+                        pattern[r][c],
+                        color,
+                        false,
+                        false,
+                        r,
+                        c,
+                        pHeight,
+                        pWidth
+                    );
                 }
             }
         }

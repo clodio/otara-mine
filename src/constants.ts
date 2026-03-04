@@ -136,6 +136,13 @@ export const GEMS: { [key: string]: any } = {
     RED_POINT: { name: 'RED_POINT', color: COLORS.ROT, baseGems: ["ROT"], gridPattern: [[1]] },
     RED_DIAMOND: { name: 'RED_DIAMOND', color: COLORS.ROT, baseGems: ["ROT"], gridPattern: [[4,5],[3,2]] },
     BLACK_HOLE: { name: 'BLACK_HOLE', color: COLORS.SCHWARZ_GEM, baseGems: ["SCHWARZ"], special: 'absorbs', gridPattern: [[1]] },
+    SATURN: {
+        name: 'SATURN', color: COLORS.WEISS, baseGems: ["WEISS"],
+        gridPattern: [
+            [CellState.MIRROR_H, CellState.TRIANGLE_BR, CellState.TRIANGLE_BL, CellState.MIRROR_H],
+            [CellState.MIRROR_H, CellState.TRIANGLE_TR, CellState.TRIANGLE_TL, CellState.MIRROR_H]
+        ]
+    },
 
 };
 
@@ -160,8 +167,8 @@ export const GEM_SETS: { [key: string]: string[] } = {
     [DIFFICULTIES.NORMAL]: ['GELB', 'ROT', 'BLAU', 'WEISS_RAUTE', 'WEISS_DREIECK'],
     [DIFFICULTIES.MEDIUM]: ['GELB', 'ROT', 'BLAU', 'WEISS_RAUTE', 'WEISS_DREIECK', 'TRANSPARENT'],
     [DIFFICULTIES.HARD]: ['GELB', 'ROT', 'BLAU', 'WEISS_RAUTE', 'WEISS_DREIECK', 'TRANSPARENT', 'SCHWARZ'],
-    [DIFFICULTIES.STAR_NORMAL]: ['SUN', 'SUN_WHITE', 'BLUE_DIAMOND', 'RED_POINT', 'RED_DIAMOND'],
-    [DIFFICULTIES.STAR_HARD]: ['SUN', 'SUN_WHITE', 'BLUE_DIAMOND', 'RED_POINT', 'RED_DIAMOND','BLACK_HOLE'],
+    [DIFFICULTIES.STAR_NORMAL]: ['SUN', 'SUN_WHITE', 'BLUE_DIAMOND', 'RED_POINT', 'RED_DIAMOND', 'SATURN'],
+    [DIFFICULTIES.STAR_HARD]: ['SUN', 'SUN_WHITE', 'BLUE_DIAMOND', 'RED_POINT', 'RED_DIAMOND', 'BLACK_HOLE', 'SATURN'],
 };
 
 export const RATINGS: { [key: string]: { limit: number; textKey: string }[] } = {

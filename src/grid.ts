@@ -10,4 +10,6 @@ export enum CellState {
     TRIANGLE_BR = 4, // Bottom-Right. '\' slope.
     TRIANGLE_BL = 5, // Bottom-Left. '/' slope.
     ABSORB = 6,
+    MIRROR_V = 7,
+    MIRROR_H = 8,
 }
