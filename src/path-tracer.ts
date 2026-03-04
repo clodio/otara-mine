@@ -82,8 +82,8 @@ function getRefractionDirection(currentPos: { x: number, y: number }, currentDir
         if (dx > 0) return Direction.LEFT; 
     } else if (currentDir === Direction.LEFT) {
         // Coming from right, deflect based on vertical offset
-        if (dy < 0) return Direction.UP;    
-        if (dy > 0) return Direction.DOWN;  
+        if (dy < 0) return Direction.DOWN;    
+        if (dy > 0) return Direction.UP;  
     } else if (currentDir === Direction.RIGHT) {
         // Coming from left, deflect based on vertical offset
         if (dy < 0) return Direction.DOWN;    
@@ -127,15 +127,6 @@ export function tracePath(
     let pendingRefractionTarget: { x: number, y: number } | null = null;
 
     for (let step = 0; step < MAX_STEPS; step++) {
-        // Check if we're at the refraction target position
-        if (pendingRefractionTarget && currentPos.x === pendingRefractionTarget.x && currentPos.y === pendingRefractionTarget.y && pendingRefractionDir !== null) {
-            // Apply the refractive direction at the target position
-            currentDir = pendingRefractionDir;
-            pendingRefractionDir = null;
-            pendingRefractionTarget = null;
-            path.push({ x: currentPos.x + 0.5, y: currentPos.y + 0.5 });
-        }
-        
         move(currentPos, currentDir);
         
         // Add point for drawing
@@ -160,6 +151,20 @@ export function tracePath(
         }
 
         const cellState = grid[currentPos.y][currentPos.x];
+
+        // Apply pending refraction when we reach the target cell.
+        // If there's a reflective surface here, reflection prevails (refraction canceled).
+        if (pendingRefractionTarget && currentPos.x === pendingRefractionTarget.x && currentPos.y === pendingRefractionTarget.y) {
+            if (cellState === CellState.EMPTY && pendingRefractionDir !== null) {
+                currentDir = pendingRefractionDir;
+                pendingRefractionDir = null;
+                pendingRefractionTarget = null;
+                path.push({ x: currentPos.x + 0.5, y: currentPos.y + 0.5 });
+                continue; // Skip interactions; the beam bends here and keeps going next step.
+            }
+            pendingRefractionDir = null;
+            pendingRefractionTarget = null;
+        }
         
         // Check for BLACK_HOLE refraction when in an EMPTY cell
         // Detect if adjacent to BLACK_HOLE to queue refraction at specific position
