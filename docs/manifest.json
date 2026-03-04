@@ -1,0 +1,71 @@
+{
+  "name": "Orapa Mine",
+  "short_name": "Orapa",
+  "description": "Un jeu de puzzle sur les chemins lumineux basé sur le jeu de société Orapa Mine",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#3498db",
+  "background_color": "#2c3e50",
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%232c3e50' width='540' height='720'/><text x='50%' y='50%' font-size='48' fill='%23ecf0f1' text-anchor='middle' dominant-baseline='central' font-family='system-ui'>Orapa Mine</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/assets/logo_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo_192x192.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo_256x256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo_256x256.webp",
+      "sizes": "256x256",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo_512x512.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jouer",
+      "short_name": "Jouer",
+      "description": "Commencer une nouvelle partie",
+      "url": "/?action=play",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%233498db' width='192' height='192'/><polygon points='70,50 70,142 130,96' fill='%23ecf0f1'/></svg>",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}

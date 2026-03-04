@@ -4,9 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Orapa Mine</title>
-  <script type="module" crossorigin src="./assets/index-z-ccuQGR.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-x5LkAYDN.css">
+    <meta name="theme-color" content="#3498db">
+    <meta name="description" content="Orapa Mine - Un jeu de puzzle basé sur les chemins lumineux">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Orapa">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/assets/logo_192x192-CZ-TLlAw.png">
+    <link rel="apple-touch-icon" href="/assets/logo_192x192-CZ-TLlAw.png">
+    <title>Orapa Mine</title>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => {
+                console.log('SW registration failed: ', err);
+            });
+        }
+    </script>
+  <script type="module" crossorigin src="/assets/main-Cib4CmJC.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-xiXSRsyn.css">
 </head>
 <body>
     <div id="app">
@@ -92,6 +107,15 @@
 
         <!-- Game Screen -->
         <div id="screen-game" class="screen hidden">
+            <div id="share-link-container" class="hidden">
+                <button id="share-link" type="button" aria-label="partager">
+                    <span class="share-text">partager</span>
+                    <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.3a3.2 3.2 0 0 0 0-1.8l6.7-3.3A3 3 0 1 0 15 6a3 3 0 0 0 .1.7L8.4 10a3 3 0 1 0 0 4l6.7 3.3A3 3 0 1 0 18 16z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="share-toast" class="toast hidden" role="status" aria-live="polite"></div>
             <main id="game-container">
                 <div id="game-board-wrapper">
                     <canvas id="gem-canvas" tabindex="0"></canvas>
@@ -155,6 +179,6 @@
             </div>
         </div>
         
-    </div>
+    </div>
 </body>
 </html>
