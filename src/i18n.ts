@@ -68,6 +68,8 @@ const translations = {
             stats: "Du hast die Mine in {{count}} Abfragen gelöst.",
             statsLoss: "Du hast die Lösung nach {{count}} Abfragen nicht gefunden.",
             retry: "Bitte versuche es erneut.",
+            failedCheckTitle: "Lösung nicht korrekt",
+            failedCheckMessage: "Du hast {{count}} Abfragen gesendet, aber die Lösung ist nicht korrekt. Möchtest du weiterspielen oder die Lösung sehen?",
             solutionLabel: {
                 correct: "Korrekte Lösung:",
                 alternative: "Alternative Lösung gefunden! Deine Lösung (transparent):",
@@ -87,6 +89,8 @@ const translations = {
             submitSolution: "Lösung einreichen",
             giveUp: "Aufgeben",
             remove: "Entfernen",
+            continuePlaying: "Weiterspielen",
+            seeSolution: "Lösung sehen",
         },
         rules: {
             title: "Spielanleitung",
@@ -247,6 +251,8 @@ const translations = {
             stats: "You solved the mine in {{count}} queries.",
             statsLoss: "You did not find the solution after {{count}} queries.",
             retry: "Please try again.",
+            failedCheckTitle: "Incorrect solution",
+            failedCheckMessage: "You sent {{count}} queries, but the solution is not correct. Do you want to continue playing or see the solution?",
             solutionLabel: {
                 correct: "Correct Solution:",
                 alternative: "Alternative solution found! Your solution (transparent):",
@@ -266,6 +272,8 @@ const translations = {
             submitSolution: "Submit Solution",
             giveUp: "Give Up",
             remove: "Remove",
+            continuePlaying: "Continue Playing",
+            seeSolution: "See Solution",
         },
         rules: {
             title: "How to Play",
@@ -427,6 +435,8 @@ const translations = {
             stats: "Vous avez résolu la mine en {{count}} requêtes.",
             statsLoss: "Vous n'avez pas trouvé la solution après {{count}} requêtes.",
             retry: "Veuillez réessayer.",
+            failedCheckTitle: "Solution incorrecte",
+            failedCheckMessage: "Vous avez envoyé {{count}} requêtes, mais la solution n'est pas correcte. Voulez-vous continuer à jouer ou voir la solution ?",
             solutionLabel: {
                 correct: "Solution correcte :",
                 alternative: "Solution alternative trouvée ! Votre solution (transparente) :",
@@ -446,6 +456,8 @@ const translations = {
             submitSolution: "Valider la solution",
             giveUp: "Abandonner",
             remove: "Retirer",
+            continuePlaying: "Continuer à jouer",
+            seeSolution: "Voir la solution",
         },
         rules: {
             title: "Règles du jeu",

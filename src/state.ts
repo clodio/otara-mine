@@ -70,6 +70,8 @@ export interface GameState {
     // For custom levels
     customGemSet: string[];
     customGemDefinitions: { [key: string]: any };
+    // For failed solution checks
+    isAwaitingFailedCheckChoice: boolean; // True if showing "try again or see solution" screen
 }
 
 export const gameState: GameState = {
@@ -90,4 +92,5 @@ export const gameState: GameState = {
     partyId: null,
     customGemSet: [],
     customGemDefinitions: {},
+    isAwaitingFailedCheckChoice: false,
 };

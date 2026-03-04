@@ -45,6 +45,12 @@ export class UI {
     shareToast!: HTMLElement;
     private toastTimeoutId: number | null = null;
     
+    // Failed Check Screen Elements
+    failedCheckTitle!: HTMLElement;
+    failedCheckMessage!: HTMLElement;
+    btnContinuePlaying!: HTMLButtonElement;
+    btnSeeSolution!: HTMLButtonElement;
+    
     // End Screen Elements
     endTitle!: HTMLElement;
     endRating!: HTMLElement;
@@ -78,6 +84,7 @@ export class UI {
         this.screens.difficulty = document.getElementById('screen-difficulty')!;
         this.screens['custom-creator'] = document.getElementById('screen-custom-creator')!;
         this.screens.game = document.getElementById('screen-game')!;
+        this.screens['failed-check'] = document.getElementById('screen-failed-check')!;
         this.screens.end = document.getElementById('screen-end')!;
         
         this.langSwitcher = document.getElementById('lang-switcher')!;
@@ -102,6 +109,11 @@ export class UI {
         this.shareLinkContainer = document.getElementById('share-link-container') as HTMLElement;
         this.shareLink = document.getElementById('share-link') as HTMLButtonElement;
         this.shareToast = document.getElementById('share-toast') as HTMLElement;
+        
+        this.failedCheckTitle = document.getElementById('failed-check-title')!;
+        this.failedCheckMessage = document.getElementById('failed-check-message')!;
+        this.btnContinuePlaying = document.getElementById('btn-continue-playing') as HTMLButtonElement;
+        this.btnSeeSolution = document.getElementById('btn-see-solution') as HTMLButtonElement;
         
         this.endTitle = document.getElementById('end-title')!;
         this.endRating = document.getElementById('end-rating') as HTMLElement;
@@ -136,6 +148,8 @@ export class UI {
         
         this.checkSolutionBtn.addEventListener('click', () => this.game.checkSolution());
         this.giveUpBtn.addEventListener('click', () => this.game.giveUp());
+        this.btnContinuePlaying.addEventListener('click', () => this.game.continueAfterFailedCheck());
+        this.btnSeeSolution.addEventListener('click', () => this.game.giveUpAfterFailedCheck());
         this.previewToggle.addEventListener('change', () => this.game.togglePlayerPathPreview());
         this.modeWaveBtn.addEventListener('click', () => this.game.setInteractionMode(InteractionMode.WAVE));
         this.modeQueryBtn.addEventListener('click', () => this.game.setInteractionMode(InteractionMode.QUERY));
@@ -277,7 +291,7 @@ export class UI {
         this.renderer.handleResize();
     }
 
-    showScreen(screenName: 'main' | 'difficulty' | 'custom-creator' | 'game' | 'end') {
+    showScreen(screenName: 'main' | 'difficulty' | 'custom-creator' | 'game' | 'end' | 'failed-check') {
         if (screenName === 'difficulty') this.populateDifficultyOptions();
         if (screenName === 'custom-creator') this.customCreatorUI.setup();
         
@@ -434,6 +448,12 @@ export class UI {
         return true;
     }
     
+    showFailedCheckScreen(waveCount: number) {
+        this.failedCheckTitle.textContent = t('endScreen.failedCheckTitle');
+        this.failedCheckMessage.textContent = t('endScreen.failedCheckMessage', { count: waveCount });
+        this.showScreen('failed-check');
+    }
+
     showEndScreen(isWin: boolean, waveCount: number, secretGems: Gem[], playerGems: Gem[]) {
         this.endTitle.classList.remove('win', 'loss');
         this.endRetryMessage.textContent = '';

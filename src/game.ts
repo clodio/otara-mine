@@ -1,7 +1,7 @@
 
 
 import { GEMS, GEM_SETS, DIFFICULTIES, BASE_COLORS } from './constants';
-import { gameState, GameStatus, Gem, InteractionMode, WaveLog, QueryLog } from './state';
+import { gameState, GameStatus, Gem, InteractionMode, WaveLog, QueryLog, LogEntry } from './state';
 import { UI } from './ui';
 import { tracePath } from './path-tracer';
 import { CellState, GRID_WIDTH, GRID_HEIGHT } from './grid';
@@ -310,8 +310,36 @@ export class Game {
             }
         }
     
-        // 4. Show the end screen with the result
-        this.showEndScreen(isCorrect);
+        // 4. Show result - if failed, show choice screen instead of end screen
+        if (isCorrect) {
+            this.showEndScreen(true);
+        } else {
+            // Show "Failed - Continue or See Solution" screen
+            gameState.isAwaitingFailedCheckChoice = true;
+            this.ui.showFailedCheckScreen(gameState.waveCount);
+        }
+    }
+
+    continueAfterFailedCheck() {
+        // Add log entry for failed validation
+        const failedCheckLog: LogEntry = {
+            type: InteractionMode.WAVE,
+            id: 'KO',
+            result: { exitId: 'Validation échouée', colors: [], path: [] },
+            path: [],
+        };
+        gameState.log.push(failedCheckLog);
+        this.ui.addLogEntry(failedCheckLog);
+        
+        // Return to game without closing it
+        gameState.isAwaitingFailedCheckChoice = false;
+        this.ui.showScreen('game');
+    }
+
+    giveUpAfterFailedCheck() {
+        // Show the end screen as loss
+        gameState.isAwaitingFailedCheckChoice = false;
+        this.showEndScreen(false);
     }
 
     addPlayerGem(gemName: string, x: number, y: number) {
