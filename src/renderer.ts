@@ -92,13 +92,8 @@ export class Renderer {
             startEmitter.isUsed = true;
             startEmitter.usedColor = resultColor;
         }
-        if (logEntry.result.exitId && logEntry.result.exitId !== 'Loop?') {
-            const endEmitter = this.emitters.find(e => e.id === logEntry.result.exitId);
-            if (endEmitter) {
-                endEmitter.isUsed = true;
-                endEmitter.usedColor = resultColor;
-            }
-        }
+        // Don't update the exit emitter's color - it will have its own color when used as a starting point
+        // This prevents overwriting the color of an emitter that was already used
     }
 
     redrawAll() {

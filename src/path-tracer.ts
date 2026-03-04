@@ -166,26 +166,22 @@ export function tracePath(
             pendingRefractionTarget = null;
         }
         
-        // Check for BLACK_HOLE refraction when in an EMPTY cell
-        // Detect if adjacent to BLACK_HOLE to queue refraction at specific position
-        if (cellState === CellState.EMPTY && pendingRefractionDir === null) {
-            // Check all adjacent cells for BLACK_HOLE
+        // Check for BLACK_HOLE refraction in ANY cell (EMPTY or not)
+        // This must be done BEFORE accumulating gem colors to avoid counting gems
+        // that will be bypassed due to refraction
+        if (pendingRefractionDir === null) {
             const adjacentCells = getAdjacentCells(currentPos);
             
             for (const adjPos of adjacentCells) {
                 if (isBlackHole(adjPos, gemMap, game)) {
-                    // Refraction key to track if already refracted by this BLACK_HOLE
                     const refractionKey = `${adjPos.y},${adjPos.x}`;
                     
-                    // Only queue refraction if we haven't already refracted past this BLACK_HOLE
                     if (!refractedByBlackHoles.has(refractionKey)) {
                         const refractedDir = getRefractionDirection(currentPos, currentDir, adjPos);
                         if (refractedDir !== null && refractedDir !== currentDir) {
-                            // Mark this BLACK_HOLE as the source of refraction
                             refractedByBlackHoles.add(refractionKey);
                             
-                            // Calculate the refraction target position based on the ray's current direction
-                            // This is where the ray will be when refraction should be applied
+                            // Calculate the refraction target position
                             let targetPos: { x: number, y: number };
                             switch (currentDir) {
                                 case Direction.UP:
@@ -202,26 +198,30 @@ export function tracePath(
                                     break;
                             }
                             
-                            // Queue the refraction for when we reach the target position
                             pendingRefractionDir = refractedDir;
                             pendingRefractionTarget = targetPos;
+                            
+                            // If we're in an EMPTY cell, skip all processing for this iteration
+                            // If we're in a cell with a gem, we'll still process reflections but not colors
+                            if (cellState === CellState.EMPTY) {
+                                continue;
+                            }
                             break;
                         }
                     }
                 }
             }
-            continue; // Continue through EMPTY cell without further processing
         }
 
         // Add the current cell center as a path node before reflection
         path.push({ x: currentPos.x + 0.5, y: currentPos.y + 0.5 });
         
-        // Something was hit, add gem color if not already hit
+        // Only accumulate gem colors if there's NO pending refraction
+        // If refraction is pending, we're about to change direction and shouldn't count this gem
         const gemKey = `${currentPos.y},${currentPos.x}`;
         const hitGem = gemMap.get(gemKey);
-        if (hitGem && !hitGems.has(hitGem.id)) {
+        if (hitGem && !hitGems.has(hitGem.id) && pendingRefractionDir === null) {
             hitGems.add(hitGem.id);
-            // This is the key change: use the game instance to get the definition
             const gemDef = (game as any).getGemDefinition(hitGem.name); 
             if (gemDef && gemDef.baseGems) {
                 gemDef.baseGems.forEach((c: string) => hitColors.add(c));
