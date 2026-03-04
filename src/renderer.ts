@@ -32,6 +32,8 @@ export class Renderer {
     
     // Drawable objects
     private emitters: EmitterButton[] = [];
+    private lastSelectedLogId: string | null = null;
+    private cachedShuffledColors: string[] = [];
 
     constructor(game: Game, ui: UI) {
         this.game = game;
@@ -576,11 +578,19 @@ export class Renderer {
         const contextEmitter = this.emitters.find(e => e.id === contextEmitterId);
         if (!contextEmitter) return;
 
+        // Only recalculate shuffle if we've selected a different log
+        if (this.lastSelectedLogId !== gameState.selectedLogEntryId) {
+            this.lastSelectedLogId = gameState.selectedLogEntryId;
+            this.cachedShuffledColors = selectedLog.result.colors.length > 0 
+                ? this.shuffleArray([...selectedLog.result.colors]) 
+                : [];
+        }
+
         const pathColorName = this.ui.getPathColorName(selectedLog.result);
         const startId = contextEmitterId === selectedLog.id ? selectedLog.id : selectedLog.result.exitId;
         const endId = contextEmitterId === selectedLog.id ? selectedLog.result.exitId : selectedLog.id;
 
-        this.drawTooltipWithColorMix(ctx, startId, pathColorName, selectedLog.result.colors, endId, contextEmitter.rect);
+        this.drawTooltipWithColorMix(ctx, startId, pathColorName, this.cachedShuffledColors, endId, contextEmitter.rect);
     }
 
     private _drawSelectedQueryHighlight(ctx: CanvasRenderingContext2D) {
@@ -688,6 +698,8 @@ export class Renderer {
         ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`;
         ctx.textBaseline = 'middle';
         
+        // Colors are already shuffled by caller - use them directly
+        
         // Build text parts
         const part1 = `${startId} ➔ `;
         const part2 = colorName;
@@ -757,7 +769,7 @@ export class Renderer {
             ctx.fillText('(', currentX, contentY);
             currentX += ctx.measureText('(').width;
             
-            // Draw color boxes
+            // Draw color boxes (already shuffled from caller)
             colors.forEach((colorName, index) => {
                 const colorHex = this.getBaseColorHex(colorName);
                 ctx.fillStyle = colorHex;
@@ -788,5 +800,14 @@ export class Renderer {
         ctx.fillText(part3, currentX, contentY);
         
         ctx.restore();
+    }
+
+    private shuffleArray<T>(array: T[]): T[] {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
     }
 }
