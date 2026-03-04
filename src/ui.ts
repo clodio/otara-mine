@@ -203,7 +203,27 @@ export class UI {
         const link = url.toString();
         this.shareLink.dataset.shareUrl = link;
         this.shareLink.title = link;
+        
+        // Generate short hash for visual verification
+        this._generateShortCode(partyId).then(shortCode => {
+            this.shareLink.innerHTML = `<span class="share-text">partager #${shortCode}</span><svg class="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.3a3.2 3.2 0 0 0 0-1.8l6.7-3.3A3 3 0 1 0 15 6a3 3 0 0 0 .1.7L8.4 10a3 3 0 1 0 0 4l6.7 3.3A3 3 0 1 0 18 16z" fill="currentColor"/></svg>`;
+        });
+        
         this.shareLinkContainer.classList.remove('hidden');
+    }
+
+    private async _generateShortCode(partyId: string): Promise<string> {
+        try {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(partyId);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex.substring(0, 5).toUpperCase();
+        } catch {
+            // Fallback to simple hash if crypto not available
+            return partyId.substring(0, 5).toUpperCase();
+        }
     }
 
     private async copyShareLinkToClipboard() {
