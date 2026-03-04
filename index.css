@@ -812,6 +812,8 @@ html, body {
 .tab-panel.active { 
     display: block; 
     background: var(--bg-color);
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 #actions-panel.active {
