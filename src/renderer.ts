@@ -502,62 +502,16 @@ export class Renderer {
         if (!this.inputHandler) return;
         const selectedLog = gameState.log.find(l => l.id === gameState.selectedLogEntryId) as WaveLog | undefined;
         if (!selectedLog || selectedLog.type !== InteractionMode.WAVE) return;
-    
+
         const contextEmitterId = gameState.previewSourceEmitterId || selectedLog.id;
         const contextEmitter = this.emitters.find(e => e.id === contextEmitterId);
         if (!contextEmitter) return;
 
         const pathColorName = this.ui.getPathColorName(selectedLog.result);
-        const text = (contextEmitterId === selectedLog.id)
-            ? `${selectedLog.id} ➔ ${pathColorName} ➔ ${selectedLog.result.exitId}`
-            : `${selectedLog.result.exitId} ➔ ${pathColorName} ➔ ${selectedLog.id}`;
-    
-        this.drawTooltip(ctx, text, contextEmitter.rect);
-    }
+        const startId = contextEmitterId === selectedLog.id ? selectedLog.id : selectedLog.result.exitId;
+        const endId = contextEmitterId === selectedLog.id ? selectedLog.result.exitId : selectedLog.id;
 
-    private drawTooltip(ctx: CanvasRenderingContext2D, text: string, anchorRect: DOMRect | {x:number, y:number, width:number, height:number}) {
-        ctx.save();
-        const fontSize = this.cellHeight * 0.35;
-        ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`;
-        ctx.textBaseline = 'middle';
-        
-        const textMetrics = ctx.measureText(text);
-        const padding = { x: 8, y: 5 };
-        const rectWidth = textMetrics.width + padding.x * 2;
-        const rectHeight = fontSize + padding.y * 2;
-        const margin = 5;
-        const canvasW = this.gemCanvas.width / (window.devicePixelRatio || 1);
-        const canvasH = this.gemCanvas.height / (window.devicePixelRatio || 1);
-        
-        let rectX = 0, rectY = 0;
-
-        rectY = anchorRect.y + anchorRect.height + margin;
-        rectX = anchorRect.x + anchorRect.width / 2 - rectWidth / 2;
-        if (rectY + rectHeight > canvasH) {
-            rectY = anchorRect.y - rectHeight - margin;
-            if (rectY < 0) {
-                rectX = anchorRect.x + anchorRect.width + margin;
-                rectY = anchorRect.y + anchorRect.height / 2 - rectHeight / 2;
-                if (rectX + rectWidth > canvasW) {
-                    rectX = anchorRect.x - rectWidth - margin;
-                }
-            }
-        }
-        
-        if (rectX < 0) rectX = 0;
-        if (rectX + rectWidth > canvasW) rectX = canvasW - rectWidth;
-        if (rectY < 0) rectY = 0;
-        if (rectY + rectHeight > canvasH) rectY = canvasH - rectHeight;
-        
-        ctx.fillStyle = 'black';
-        ctx.beginPath();
-        ctx.roundRect(rectX, rectY, rectWidth, rectHeight, 6);
-        ctx.fill();
-    
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        ctx.fillText(text, rectX + rectWidth / 2, rectY + rectHeight / 2);
-        ctx.restore();
+        this.drawTooltipWithColorMix(ctx, startId, pathColorName, selectedLog.result.colors, endId, contextEmitter.rect);
     }
 
     private _drawSelectedQueryHighlight(ctx: CanvasRenderingContext2D) {
@@ -608,5 +562,162 @@ export class Renderer {
 
     public getBaseColorNameKey(colorKey: string): string {
         return (BASE_COLORS[colorKey as keyof typeof BASE_COLORS] as any)?.nameKey || '';
+    }
+
+    private drawTooltip(ctx: CanvasRenderingContext2D, text: string, anchorRect: DOMRect | {x:number, y:number, width:number, height:number}) {
+        ctx.save();
+        const fontSize = this.cellHeight * 0.35;
+        ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`;
+        ctx.textBaseline = 'middle';
+        
+        const textMetrics = ctx.measureText(text);
+        const padding = { x: 8, y: 5 };
+        const rectWidth = textMetrics.width + padding.x * 2;
+        const rectHeight = fontSize + padding.y * 2;
+        const margin = 5;
+        const canvasW = this.gemCanvas.width / (window.devicePixelRatio || 1);
+        const canvasH = this.gemCanvas.height / (window.devicePixelRatio || 1);
+        
+        let rectX = 0, rectY = 0;
+
+        rectY = anchorRect.y + anchorRect.height + margin;
+        rectX = anchorRect.x + anchorRect.width / 2 - rectWidth / 2;
+        if (rectY + rectHeight > canvasH) {
+            rectY = anchorRect.y - rectHeight - margin;
+            if (rectY < 0) {
+                rectX = anchorRect.x + anchorRect.width + margin;
+                rectY = anchorRect.y + anchorRect.height / 2 - rectHeight / 2;
+                if (rectX + rectWidth > canvasW) {
+                    rectX = anchorRect.x - rectWidth - margin;
+                }
+            }
+        }
+        
+        if (rectX < 0) rectX = 0;
+        if (rectX + rectWidth > canvasW) rectX = canvasW - rectWidth;
+        if (rectY < 0) rectY = 0;
+        if (rectY + rectHeight > canvasH) rectY = canvasH - rectHeight;
+        
+        ctx.fillStyle = 'black';
+        ctx.beginPath();
+        ctx.roundRect(rectX, rectY, rectWidth, rectHeight, 6);
+        ctx.fill();
+    
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText(text, rectX + rectWidth / 2, rectY + rectHeight / 2);
+        ctx.restore();
+    }
+
+    private drawTooltipWithColorMix(ctx: CanvasRenderingContext2D, startId: string, colorName: string, colors: string[], endId: string, anchorRect: DOMRect | {x:number, y:number, width:number, height:number}) {
+        ctx.save();
+        const fontSize = this.cellHeight * 0.35;
+        const colorBoxSize = fontSize * 0.8;
+        const padding = { x: 12, y: 6 };
+        const spacing = 4; // space between elements
+        
+        ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`;
+        ctx.textBaseline = 'middle';
+        
+        // Build text parts
+        const part1 = `${startId} ➔ `;
+        const part2 = colorName;
+        const part3 = ` ➔ ${endId}`;
+        
+        const text1Metrics = ctx.measureText(part1);
+        const text2Metrics = ctx.measureText(part2);
+        const text3Metrics = ctx.measureText(part3);
+        
+        // Calculate color boxes width
+        const colorBoxesWidth = colors.length > 0 
+            ? colors.length * colorBoxSize + (colors.length - 1) * 6
+            : 0;
+        
+        const parenWidth = colors.length > 0 ? ctx.measureText('()').width : 0;
+        const totalWidth = text1Metrics.width + text2Metrics.width + parenWidth + colorBoxesWidth + spacing * 6 + text3Metrics.width;
+        const rectWidth = totalWidth + padding.x * 2;
+        const rectHeight = Math.max(fontSize, colorBoxSize) + padding.y * 2;
+        const margin = 5;
+        const canvasW = this.gemCanvas.width / (window.devicePixelRatio || 1);
+        const canvasH = this.gemCanvas.height / (window.devicePixelRatio || 1);
+        
+        let rectX = 0, rectY = 0;
+
+        rectY = anchorRect.y + anchorRect.height + margin;
+        rectX = anchorRect.x + anchorRect.width / 2 - rectWidth / 2;
+        if (rectY + rectHeight > canvasH) {
+            rectY = anchorRect.y - rectHeight - margin;
+            if (rectY < 0) {
+                rectX = anchorRect.x + anchorRect.width + margin;
+                rectY = anchorRect.y + anchorRect.height / 2 - rectHeight / 2;
+                if (rectX + rectWidth > canvasW) {
+                    rectX = anchorRect.x - rectWidth - margin;
+                }
+            }
+        }
+        
+        if (rectX < 0) rectX = 0;
+        if (rectX + rectWidth > canvasW) rectX = canvasW - rectWidth;
+        if (rectY < 0) rectY = 0;
+        if (rectY + rectHeight > canvasH) rectY = canvasH - rectHeight;
+        
+        // Draw background
+        ctx.fillStyle = 'black';
+        ctx.beginPath();
+        ctx.roundRect(rectX, rectY, rectWidth, rectHeight, 6);
+        ctx.fill();
+    
+        // Draw content
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'left';
+        const contentY = rectY + rectHeight / 2;
+        
+        let currentX = rectX + padding.x;
+        
+        // Draw part1: "R3 ➔ "
+        ctx.fillText(part1, currentX, contentY);
+        currentX += text1Metrics.width + spacing;
+        
+        // Draw part2: "Purple"
+        ctx.fillText(part2, currentX, contentY);
+        currentX += text2Metrics.width + spacing;
+        
+        // Draw parentheses and color boxes only if colors exist
+        if (colors.length > 0) {
+            // Draw opening paren: "("
+            ctx.fillText('(', currentX, contentY);
+            currentX += ctx.measureText('(').width;
+            
+            // Draw color boxes
+            colors.forEach((colorName, index) => {
+                const colorHex = this.getBaseColorHex(colorName);
+                ctx.fillStyle = colorHex;
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                ctx.lineWidth = 1;
+                ctx.fillRect(currentX, contentY - colorBoxSize / 2, colorBoxSize, colorBoxSize);
+                ctx.strokeRect(currentX, contentY - colorBoxSize / 2, colorBoxSize, colorBoxSize);
+                currentX += colorBoxSize;
+                
+                if (index < colors.length - 1) {
+                    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                    ctx.font = `${fontSize * 0.7}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText('+', currentX + 3, contentY);
+                    ctx.textAlign = 'left';
+                    ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`;
+                    currentX += 6;
+                }
+            });
+            
+            // Draw closing paren: ")"
+            ctx.fillStyle = 'white';
+            ctx.fillText(')', currentX, contentY);
+            currentX += ctx.measureText(')').width + spacing;
+        }
+        
+        // Draw part3: " ➔ R3"
+        ctx.fillText(part3, currentX, contentY);
+        
+        ctx.restore();
     }
 }
