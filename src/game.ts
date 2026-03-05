@@ -663,8 +663,93 @@ export class Game {
                     
                     if (GRID_WIDTH < effW || GRID_HEIGHT < effH) continue;
 
-                    const x = Math.floor(Math.random() * (GRID_WIDTH - effW + 1));
-                    const y = Math.floor(Math.random() * (GRID_HEIGHT - effH + 1));
+                    let x: number;
+                    let y: number;
+
+                    // Special constraint for SUN_WHITE: the [1,1,1,1] line must be on a border
+                    if (gemName === 'SUN_WHITE') {
+                        // Find the [1,1,1,1] line in the rotated/flipped pattern
+                        let solidLineInfo: { isRow: boolean; index: number; length: number } | null = null;
+                        
+                        // Check for horizontal line of all 1s with length 4
+                        for (let r = 0; r < effH; r++) {
+                            const row = pattern[r];
+                            if (row.every((cell: CellState) => cell === 1) && row.length === 4) {
+                                solidLineInfo = { isRow: true, index: r, length: 4 };
+                                break;
+                            }
+                        }
+                        
+                        // Check for vertical line of all 1s with length 4
+                        if (!solidLineInfo) {
+                            for (let c = 0; c < effW; c++) {
+                                const col = [];
+                                for (let r = 0; r < effH; r++) {
+                                    col.push(pattern[r][c]);
+                                }
+                                if (col.every((cell: CellState) => cell === 1) && col.length === 4) {
+                                    solidLineInfo = { isRow: false, index: c, length: 4 };
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (!solidLineInfo) {
+                            // Fallback: place normally if we can't find the solid line
+                            x = Math.floor(Math.random() * (GRID_WIDTH - effW + 1));
+                            y = Math.floor(Math.random() * (GRID_HEIGHT - effH + 1));
+                        } else {
+                            const borderPositions: Array<{x: number, y: number}> = [];
+                            
+                            if (solidLineInfo.isRow) {
+                                // Horizontal line at row index solidLineInfo.index
+                                const lineRowIndex = solidLineInfo.index;
+                                
+                                // Top border: place gem so that (gem.y + lineRowIndex) = 0
+                                const topGemY = -lineRowIndex;
+                                if (topGemY >= 0 && topGemY + effH <= GRID_HEIGHT) {
+                                    for (let px = 0; px <= GRID_WIDTH - effW; px++) {
+                                        borderPositions.push({x: px, y: topGemY});
+                                    }
+                                }
+                                
+                                // Bottom border: place gem so that (gem.y + lineRowIndex) = GRID_HEIGHT - 1
+                                const bottomGemY = GRID_HEIGHT - 1 - lineRowIndex;
+                                if (bottomGemY >= 0 && bottomGemY + effH <= GRID_HEIGHT && bottomGemY !== topGemY) {
+                                    for (let px = 0; px <= GRID_WIDTH - effW; px++) {
+                                        borderPositions.push({x: px, y: bottomGemY});
+                                    }
+                                }
+                            } else {
+                                // Vertical line at column index solidLineInfo.index
+                                const lineColIndex = solidLineInfo.index;
+                                
+                                // Left border: place gem so that (gem.x + lineColIndex) = 0
+                                const leftGemX = -lineColIndex;
+                                if (leftGemX >= 0 && leftGemX + effW <= GRID_WIDTH) {
+                                    for (let py = 0; py <= GRID_HEIGHT - effH; py++) {
+                                        borderPositions.push({x: leftGemX, y: py});
+                                    }
+                                }
+                                
+                                // Right border: place gem so that (gem.x + lineColIndex) = GRID_WIDTH - 1
+                                const rightGemX = GRID_WIDTH - 1 - lineColIndex;
+                                if (rightGemX >= 0 && rightGemX + effW <= GRID_WIDTH && rightGemX !== leftGemX) {
+                                    for (let py = 0; py <= GRID_HEIGHT - effH; py++) {
+                                        borderPositions.push({x: rightGemX, y: py});
+                                    }
+                                }
+                            }
+                            
+                            if (borderPositions.length === 0) continue;
+                            const pos = borderPositions[Math.floor(Math.random() * borderPositions.length)];
+                            x = pos.x;
+                            y = pos.y;
+                        }
+                    } else {
+                        x = Math.floor(Math.random() * (GRID_WIDTH - effW + 1));
+                        y = Math.floor(Math.random() * (GRID_HEIGHT - effH + 1));
+                    }
 
                     const newGem: Gem = {
                         id: `secret_${gemName}_${placedGems.length}`,
