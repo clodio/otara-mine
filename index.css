@@ -153,6 +153,25 @@ html, body {
     background: var(--primary-color);
     border-color: var(--primary-color);
 }
+#share-link {
+    transition: all 0.3s ease;
+}
+#share-link.collapsed {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(52, 152, 219, 0.2);
+}
+#share-link.collapsed .share-text {
+    display: none;
+}
+#share-link.collapsed:hover {
+    background: rgba(52, 152, 219, 0.4);
+}
 .share-icon {
     width: 14px;
     height: 14px;

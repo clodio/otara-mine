@@ -44,6 +44,7 @@ export class UI {
     shareLink!: HTMLButtonElement;
     shareToast!: HTMLElement;
     private toastTimeoutId: number | null = null;
+    private shareLinkTimeoutId: number | null = null;
     
     // Failed Check Screen Elements
     failedCheckTitle!: HTMLElement;
@@ -153,7 +154,7 @@ export class UI {
         this.previewToggle.addEventListener('change', () => this.game.togglePlayerPathPreview());
         this.modeWaveBtn.addEventListener('click', () => this.game.setInteractionMode(InteractionMode.WAVE));
         this.modeQueryBtn.addEventListener('click', () => this.game.setInteractionMode(InteractionMode.QUERY));
-        this.shareLink.addEventListener('click', () => this.copyShareLinkToClipboard());
+        this.shareLink.addEventListener('click', () => this.handleShareLinkClick());
         
         document.addEventListener('keydown', (e) => {
             if (e.key === 'n' && (gameState.status === GameStatus.PLAYING || gameState.status === GameStatus.GAME_OVER)) {
@@ -209,6 +210,10 @@ export class UI {
         if (!partyId) {
             this.shareLinkContainer.classList.add('hidden');
             this.shareLink.removeAttribute('data-share-url');
+            if (this.shareLinkTimeoutId) {
+                window.clearTimeout(this.shareLinkTimeoutId);
+                this.shareLinkTimeoutId = null;
+            }
             return;
         }
 
@@ -224,6 +229,7 @@ export class UI {
         });
         
         this.shareLinkContainer.classList.remove('hidden');
+        this.expandShareButton();
     }
 
     private async _generateShortCode(partyId: string): Promise<string> {
@@ -261,6 +267,40 @@ export class UI {
             this.showToast(t('gameScreen.shareToast'));
         } catch {
             // No-op: clipboard may be blocked by the browser.
+        }
+    }
+
+    private handleShareLinkClick() {
+        const isCollapsed = this.shareLink.classList.contains('collapsed');
+        
+        if (isCollapsed) {
+            // Button is collapsed, expand it
+            this.expandShareButton();
+            this.copyShareLinkToClipboard();
+        } else {
+            // Button is expanded, just copy
+            this.copyShareLinkToClipboard();
+        }
+    }
+
+    private expandShareButton() {
+        if (this.shareLinkTimeoutId) {
+            window.clearTimeout(this.shareLinkTimeoutId);
+        }
+        
+        this.shareLink.classList.remove('collapsed');
+        
+        // Schedule collapse after 30 seconds
+        this.shareLinkTimeoutId = window.setTimeout(() => {
+            this.collapseShareButton();
+        }, 30000);
+    }
+
+    private collapseShareButton() {
+        this.shareLink.classList.add('collapsed');
+        if (this.shareLinkTimeoutId) {
+            window.clearTimeout(this.shareLinkTimeoutId);
+            this.shareLinkTimeoutId = null;
         }
     }
 
