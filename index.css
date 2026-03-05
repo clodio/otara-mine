@@ -637,7 +637,7 @@ html, body {
     position: relative;
     padding: 1rem;
     overflow-y: auto; /* Allow THIS container to scroll vertically */
-    min-height: 350px;
+    min-height: 380px;
 }
 
 #game-board-wrapper {
