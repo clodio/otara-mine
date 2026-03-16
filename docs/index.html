@@ -12,10 +12,13 @@
     <link rel="manifest" href="/otara-mine/manifest.json">
     <link rel="icon" type="image/png" href="/otara-mine/assets/logo_192x192-CZ-TLlAw.png">
     <link rel="apple-touch-icon" href="/otara-mine/assets/logo_192x192-CZ-TLlAw.png">
-    <title>Orapa Mine</title>
+    <title>Orapa Mine</title>
+
+
+
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(err => {
+            navigator.serviceWorker.register('./sw.js').catch(err => {
                 console.log('SW registration failed: ', err);
             });
         }
@@ -191,6 +194,7 @@
             </div>
         </div>
         
-    </div>
+    </div>
+
 </body>
 </html>
